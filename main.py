@@ -70,10 +70,11 @@ class ConnectFourGUI:
         self.turn = PLAYER
 
     def reset_game(self):
-        self.board = np.zeros((ROWS, COLS), dtype=int)
-        self.turn = PLAYER
-        self.draw_board()
-
+        # self.board = np.zeros((ROWS, COLS), dtype=int)
+        # self.turn = PLAYER
+        # self.draw_board()
+        self.root.destroy()
+        
     def is_valid_location(self, col):
         return self.board[0][col] == EMPTY
 
@@ -151,18 +152,23 @@ class ConnectFourGUI:
             return column, value
 
 
-def start_game(root, welcome_window, use_alpha_beta):
+def start_game(welcome_window, use_alpha_beta):
     """Closes the welcome window and starts the main game."""
-    # welcome_window.destroy()  # Close the welcome window
-    ConnectFourGUI(welcome_window, use_alpha_beta)  # Start the game
+    root = tk.Tk()
+    root.title("Connect Four")
+    root.geometry("800x600")
+    
+    ConnectFourGUI(root, use_alpha_beta)
 
-def show_welcome_window(root):
+    root.mainloop()
+
+def show_welcome_window():
     """Displays the welcome window with a checkbox for Alpha-Beta Pruning."""
     # Create a child window for the welcome message
-    welcome_window = tk.Toplevel(root)
+    welcome_window = tk.Tk()
     welcome_window.title("Welcome to Connect Four")
     welcome_window.geometry("400x300")
-    welcome_window.transient(root)  # Keep it on top of the main game window
+    # welcome_window.transient(root)  # Keep it on top of the main game window
 
     # Welcome message
     tk.Label(welcome_window, text="Welcome to Connect Four!", font=("Arial", 16)).pack(pady=20)
@@ -176,15 +182,9 @@ def show_welcome_window(root):
 
     # Start Game button
     tk.Button(welcome_window, text="Start Game", font=("Arial", 14),
-              command=lambda: start_game(root, welcome_window, use_alpha_beta.get())).pack(pady=20)
+              command=lambda: start_game(welcome_window, use_alpha_beta.get())).pack(pady=20)
+    welcome_window.mainloop()
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Connect Four")
-    root.geometry("800x600")  # Size for the main game window
+    show_welcome_window()
 
-    # Launch the welcome window alongside the main window
-    show_welcome_window(root)
-
-    # Run the main event loop
-    root.mainloop()
