@@ -153,63 +153,64 @@ class ConnectFourGUI:
             return column, value
 
 
-def start_game(welcome_window, use_alpha_beta, k):
-    """Closes the welcome window and starts the main game."""
+def start_game(welcome_window, algorithm, k):
     root = tk.Tk()
     root.title("Connect Four")
     root.geometry("800x600")
-    
-    ConnectFourGUI(root, use_alpha_beta, k)
-
+    ConnectFourGUI(root, algorithm, k)
     root.mainloop()
 
 def show_welcome_window():
-    """Displays the welcome window with a checkbox for Alpha-Beta Pruning and a text field for K."""
-    # Create a child window for the welcome message
+    """Displays the welcome window with options to select an AI algorithm and configure settings."""
+    def toggle_k_input():
+        """Show or hide the K input field based on the selected algorithm."""
+        if algorithm_var.get() == "minimax_with_pruning":
+            k_label.pack(pady=5)
+            k_entry.pack(pady=5)
+        else:
+            k_label.pack_forget()
+            k_entry.pack_forget()
+
+    def start_game_from_welcome():
+        """Starts the game with the selected settings."""
+        algorithm = algorithm_var.get()
+        k_value = k_entry.get() if algorithm == "minimax_with_pruning" else None
+        if algorithm == "minimax_with_pruning" and not k_value.isdigit():
+            messagebox.showerror("Invalid Input", "Please enter a valid integer for K.")
+            return
+        start_game(welcome_window, algorithm, int(k_value) if k_value else None)
+
+    # Create the welcome window
     welcome_window = tk.Tk()
     welcome_window.title("Welcome to Connect Four")
-    welcome_window.geometry("400x300")
+    welcome_window.geometry("800x600")
 
     # Welcome message
     tk.Label(welcome_window, text="Welcome to Connect Four!", font=("Arial", 16)).pack(pady=20)
 
-    # AI type selection with checkbox
-    tk.Label(welcome_window, text="AI Type:", font=("Arial", 12)).pack(pady=10)
-    use_alpha_beta = tk.BooleanVar(value=True)  # Default: Alpha-Beta Pruning enabled
+    # Algorithm selection
+    tk.Label(welcome_window, text="Choose AI Algorithm:", font=("Arial", 12)).pack(pady=10)
+    algorithm_var = tk.StringVar(value="minimax_no_pruning")
 
-    def toggle_k_field():
-        if use_alpha_beta.get():
-            k_entry.config(state="normal")
-        else:
-            k_entry.config(state="disabled")
-            k_value.set("")  # Clear the value of K if pruning is disabled
+    # Algorithm options
+    algorithms = [
+        ("Minimax without Pruning", "minimax_no_pruning"),
+        ("Minimax with Pruning", "minimax_with_pruning"),
+        ("Expected Minimax", "expected_minimax")
+    ]
+    for text, value in algorithms:
+        tk.Radiobutton(
+            welcome_window, text=text, variable=algorithm_var, value=value,
+            font=("Arial", 10), command=toggle_k_input
+        ).pack(anchor="w", padx=50)
 
-    tk.Checkbutton(welcome_window, text="Enable Alpha-Beta Pruning", font=("Arial", 10),
-                   variable=use_alpha_beta, onvalue=True, offvalue=False, command=toggle_k_field).pack(anchor="w", padx=50)
+    # K input field (hidden by default)
+    k_label = tk.Label(welcome_window, text="Enter pruning depth (K):", font=("Arial", 10))
+    k_entry = tk.Entry(welcome_window)
 
-    # Input for K value
-    k_value = tk.StringVar()
-    tk.Label(welcome_window, text="Pruning parameter (K):", font=("Arial", 10)).pack(pady=10)
-    k_entry = tk.Entry(welcome_window, textvariable=k_value, state="normal", font=("Arial", 10), width=10)
-    k_entry.pack()
-
-    # Start Game button
-    def validate_and_start():
-        if use_alpha_beta.get():
-            try:
-                k = int(k_value.get())
-                if k <= 0:
-                    raise ValueError("K must be a positive integer.")
-            except ValueError as e:
-                messagebox.showerror("Invalid Input", f"Invalid value for K: {e}")
-                return
-        else:
-            k = None  # No pruning
-        
-        start_game(None, use_alpha_beta.get(), k)
-
+    # Start game button
     tk.Button(welcome_window, text="Start Game", font=("Arial", 14),
-              command=validate_and_start).pack(pady=20)
+              command=start_game_from_welcome).pack(pady=20)
 
     welcome_window.mainloop()
 
