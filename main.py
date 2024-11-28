@@ -183,7 +183,7 @@ def show_welcome_window():
     # Create the welcome window
     welcome_window = tk.Tk()
     welcome_window.title("Welcome to Connect Four")
-    welcome_window.geometry("800x600")
+    welcome_window.geometry("640x360")
 
     # Welcome message
     tk.Label(welcome_window, text="Welcome to Connect Four!", font=("Arial", 16)).pack(pady=20)
