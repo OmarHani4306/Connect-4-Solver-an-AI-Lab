@@ -6,17 +6,18 @@ import importlib
 
 
 # Constants
-ROWS, COLS = 6, 7
+ROWS, COLS = 4, 4
 PLAYER, AI = 1, 2
 EMPTY = 0
 
 class ConnectFourGUI:
-    def __init__(self, root, use_alpha_beta, k):
+    def __init__(self, root, algorithm, k=None):
         self.root = root
-        self.use_alpha_beta = use_alpha_beta
-        self.board = np.zeros((ROWS, COLS), dtype=int)
-        self.turn = PLAYER
+        self.algorithm = algorithm
         self.k = k
+        self.board = [[str(EMPTY) for _ in range(COLS)] for _ in range(ROWS)]
+        self.top_row = [ROWS - 1] * COLS  # Tracks the top-most empty row for each column
+        self.turn = PLAYER
         self.create_widgets()
 
     def create_widgets(self):
@@ -32,9 +33,9 @@ class ConnectFourGUI:
                 x0, y0 = c * 100, r * 100
                 x1, y1 = x0 + 100, y0 + 100
                 color = "white"
-                if self.board[r, c] == PLAYER:
+                if self.board[r][c] == str(PLAYER):
                     color = "red"
-                elif self.board[r, c] == AI:
+                elif self.board[r][c] == str(AI):
                     color = "yellow"
                 self.canvas.create_oval(x0 + 10, y0 + 10, x1 - 10, y1 - 10, fill=color)
 
@@ -46,131 +47,88 @@ class ConnectFourGUI:
         if not self.is_valid_location(col):
             return
 
-        row = self.get_next_open_row(col)
-        self.board[row][col] = PLAYER
+        row = self.top_row[col]
+        self.board[row][col] = str(PLAYER)
+        self.top_row[col] -= 1  # Update the top row tracker
         self.draw_board()
 
-        if self.check_win(PLAYER):
-            messagebox.showinfo("Game Over", "You win!")
-            self.reset_game()
+        if self.is_board_full():
+            self.end_game()
             return
 
         self.turn = AI
         self.root.after(500, self.ai_move)
 
-class ConnectFourGUI:
-    def __init__(self, root, algorithm, k=None):
-        self.root = root
-        self.algorithm = algorithm  # Selected algorithm (e.g., "minimax_no_pruning")
-        self.k = k  # Pruning depth for Minimax with Pruning
-        self.board = np.zeros((ROWS, COLS), dtype=int)
-        self.turn = PLAYER
-        self.create_widgets()
-
     def ai_move(self):
         # Dynamically import and run the selected algorithm
         module = importlib.import_module(self.algorithm)
-        if self.algorithm == "minimax_with_pruning":
-            col, tree = module.run(self.board, self.k, -math.inf, math.inf, True, self.evaluate_board)
-        else:
-            col, tree = module.run(self.board, self.k, True, self.evaluate_board)
+        # col, _ = module.run(self.board, self.k)
+        col, _ = 0, 0
 
         if self.is_valid_location(col):
-            row = self.get_next_open_row(col)
-            self.board[row][col] = AI
+            row = self.top_row[col]
+            self.board[row][col] = str(AI)
+            self.top_row[col] -= 1
             self.draw_board()
 
-        if self.check_win(AI):
-            messagebox.showinfo("Game Over", "AI wins!")
-            self.reset_game()
+        if self.is_board_full():
+            self.end_game()
             return
-
-        # Display the tree (if applicable)
-        # tree_structure = stringify_tree(tree)
-        # display_tree_in_window(tree_structure)
 
         self.turn = PLAYER
 
-    def reset_game(self):
-        # self.board = np.zeros((ROWS, COLS), dtype=int)
-        # self.turn = PLAYER
-        # self.draw_board()
-        self.root.destroy()
-        
     def is_valid_location(self, col):
-        return self.board[0][col] == EMPTY
+        return self.top_row[col] >= 0
 
-    def get_next_open_row(self, col):
-        for r in range(ROWS - 1, -1, -1):
-            if self.board[r][col] == EMPTY:
-                return r
+    def is_board_full(self):
+        return all(self.top_row[c] < 0 for c in range(COLS))
 
-    def check_win(self, piece):
-        # Check horizontal locations
+    def count_connected_fours(self, piece):
+        count = 0
+
+        # Helper to check bounds and match piece
+        def in_bounds_and_matches(r, c):
+            return 0 <= r < ROWS and 0 <= c < COLS and self.board[r][c] == str(piece)
+
+        # Traverse board to count connected fours
         for r in range(ROWS):
-            for c in range(COLS - 3):
-                if all(self.board[r, c:c+4] == piece):
-                    return True
-        # Check vertical locations
-        for r in range(ROWS - 3):
             for c in range(COLS):
-                if all(self.board[r:r+4, c] == piece):
-                    return True
-        # Check positive diagonals
-        for r in range(ROWS - 3):
-            for c in range(COLS - 3):
-                if all(self.board[r+i, c+i] == piece for i in range(4)):
-                    return True
-        # Check negative diagonals
-        for r in range(3, ROWS):
-            for c in range(COLS - 3):
-                if all(self.board[r-i, c+i] == piece for i in range(4)):
-                    return True
-        return False
+                if self.board[r][c] != str(piece):
+                    continue
 
-        valid_locations = [c for c in range(COLS) if self.is_valid_location(c)]
-        is_terminal = self.check_win(PLAYER) or self.check_win(AI) or len(valid_locations) == 0
+                # Horizontal
+                if c <= COLS - 4 and all(in_bounds_and_matches(r, c + i) for i in range(4)):
+                    count += 1
 
-        if depth == 0 or is_terminal:
-            if self.check_win(AI):
-                return None, 100000000000000
-            elif self.check_win(PLAYER):
-                return None, -100000000000000
-            else:
-                return None, 0
+                # Vertical
+                if r <= ROWS - 4 and all(in_bounds_and_matches(r + i, c) for i in range(4)):
+                    count += 1
 
-        if maximizing_player:
-            value = -math.inf
-            column = valid_locations[0]
-            for col in valid_locations:
-                row = self.get_next_open_row(col)
-                b_copy = board.copy()
-                b_copy[row][col] = AI
-                new_score = self.minimax(b_copy, depth-1, alpha, beta, False)[1]
-                if new_score > value:
-                    value = new_score
-                    column = col
-                if alpha is not None:
-                    alpha = max(alpha, value)
-                if beta is not None and alpha >= beta:
-                    break
-            return column, value
+                # Positive Diagonal
+                if r <= ROWS - 4 and c <= COLS - 4 and all(in_bounds_and_matches(r + i, c + i) for i in range(4)):
+                    count += 1
+
+                # Negative Diagonal
+                if r >= 3 and c <= COLS - 4 and all(in_bounds_and_matches(r - i, c + i) for i in range(4)):
+                    count += 1
+
+        return count
+
+    def end_game(self):
+        player_score = self.count_connected_fours(PLAYER)
+        ai_score = self.count_connected_fours(AI)
+
+        if player_score > ai_score:
+            messagebox.showinfo("Game Over", f"You win! Score: Player {player_score} - AI {ai_score}")
+        elif ai_score > player_score:
+            messagebox.showinfo("Game Over", f"AI wins! Score: Player {player_score} - AI {ai_score}")
         else:
-            value = math.inf
-            column = valid_locations[0]
-            for col in valid_locations:
-                row = self.get_next_open_row(col)
-                b_copy = board.copy()
-                b_copy[row][col] = PLAYER
-                new_score = self.minimax(b_copy, depth-1, alpha, beta, True)[1]
-                if new_score < value:
-                    value = new_score
-                    column = col
-                if beta is not None:
-                    beta = min(beta, value)
-                if alpha is not None and alpha >= beta:
-                    break
-            return column, value
+            messagebox.showinfo("Game Over", f"It's a tie! Score: Player {player_score} - AI {ai_score}")
+        
+        self.reset_game()
+
+    def reset_game(self):
+        self.root.destroy()
 
 
 def start_game(welcome_window, algorithm, k):
