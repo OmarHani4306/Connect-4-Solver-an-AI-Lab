@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import numpy as np
 import math
+import importlib
+
 
 # Constants
 ROWS, COLS = 6, 7
@@ -56,8 +58,23 @@ class ConnectFourGUI:
         self.turn = AI
         self.root.after(500, self.ai_move)
 
+class ConnectFourGUI:
+    def __init__(self, root, algorithm, k=None):
+        self.root = root
+        self.algorithm = algorithm  # Selected algorithm (e.g., "minimax_no_pruning")
+        self.k = k  # Pruning depth for Minimax with Pruning
+        self.board = np.zeros((ROWS, COLS), dtype=int)
+        self.turn = PLAYER
+        self.create_widgets()
+
     def ai_move(self):
-        col, _ = self.minimax(self.board, 5, -math.inf, math.inf, True) if self.use_alpha_beta else self.minimax(self.board, 5, None, None, True)
+        # Dynamically import and run the selected algorithm
+        module = importlib.import_module(self.algorithm)
+        if self.algorithm == "minimax_with_pruning":
+            col, tree = module.run(self.board, self.k, -math.inf, math.inf, True, self.evaluate_board)
+        else:
+            col, tree = module.run(self.board, self.k, True, self.evaluate_board)
+
         if self.is_valid_location(col):
             row = self.get_next_open_row(col)
             self.board[row][col] = AI
@@ -67,6 +84,10 @@ class ConnectFourGUI:
             messagebox.showinfo("Game Over", "AI wins!")
             self.reset_game()
             return
+
+        # Display the tree (if applicable)
+        # tree_structure = stringify_tree(tree)
+        # display_tree_in_window(tree_structure)
 
         self.turn = PLAYER
 
@@ -107,7 +128,6 @@ class ConnectFourGUI:
                     return True
         return False
 
-    def minimax(self, board, depth, alpha, beta, maximizing_player):
         valid_locations = [c for c in range(COLS) if self.is_valid_location(c)]
         is_terminal = self.check_win(PLAYER) or self.check_win(AI) or len(valid_locations) == 0
 
