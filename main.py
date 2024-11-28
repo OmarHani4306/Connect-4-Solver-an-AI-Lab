@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import numpy as np
-import math
+import math, random
 import importlib
 
 
@@ -45,6 +45,7 @@ class ConnectFourGUI:
 
         col = event.x // 100
         if not self.is_valid_location(col):
+            messagebox.showerror("Invalid Move", "This column is full. Choose another column.")
             return
 
         row = self.top_row[col]
@@ -59,17 +60,21 @@ class ConnectFourGUI:
         self.turn = AI
         self.root.after(500, self.ai_move)
 
+
     def ai_move(self):
         # Dynamically import and run the selected algorithm
         module = importlib.import_module(self.algorithm)
         # col, _ = module.run(self.board, self.k)
-        col, _ = 0, 0
+        col = np.random.choice(COLS)
 
-        if self.is_valid_location(col):
-            row = self.top_row[col]
-            self.board[row][col] = str(AI)
-            self.top_row[col] -= 1
-            self.draw_board()
+        while not self.is_valid_location(col):
+            # col, _ = module.run(self.board, self.k)
+            col = np.random.choice(COLS)
+            
+        row = self.top_row[col]
+        self.board[row][col] = str(AI)
+        self.top_row[col] -= 1
+        self.draw_board()
 
         if self.is_board_full():
             self.end_game()
