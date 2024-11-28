@@ -3,6 +3,7 @@ from tkinter import messagebox
 import numpy as np
 import math, random
 import minimax_with_pruning, minimax_no_pruning, expected_minimax
+import sympy as sp
 
 
 # Constants
@@ -18,6 +19,8 @@ class ConnectFourGUI:
         self.board = [[str(EMPTY) for _ in range(COLS)] for _ in range(ROWS)]
         self.top_row = [ROWS - 1] * COLS  # Tracks the top-most empty row for each column
         self.turn = PLAYER
+        self.x = sp.symbols('x')
+        self.evaluate_board = self.x**2
         self.create_widgets()
 
     def create_widgets(self):
@@ -67,9 +70,9 @@ class ConnectFourGUI:
         if self.algorithm == "minimax_with_pruning":
             col, tree = minimax_with_pruning.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
         elif self.algorithm == "minimax_no_pruning":
-            col, tree = minimax_no_pruning.run(self.board, self.k, True, self.evaluate_board)
+            col, tree = minimax_no_pruning.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
         elif self.algorithm == "expected_minimax":
-            col, tree = expected_minimax.run(self.board, self.k, self.evaluate_board)
+            col, tree = expected_minimax.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
