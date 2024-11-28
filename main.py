@@ -9,11 +9,12 @@ PLAYER, AI = 1, 2
 EMPTY = 0
 
 class ConnectFourGUI:
-    def __init__(self, root, use_alpha_beta):
+    def __init__(self, root, use_alpha_beta, k):
         self.root = root
         self.use_alpha_beta = use_alpha_beta
         self.board = np.zeros((ROWS, COLS), dtype=int)
         self.turn = PLAYER
+        self.k = k
         self.create_widgets()
 
     def create_widgets(self):
@@ -152,23 +153,22 @@ class ConnectFourGUI:
             return column, value
 
 
-def start_game(welcome_window, use_alpha_beta):
+def start_game(welcome_window, use_alpha_beta, k):
     """Closes the welcome window and starts the main game."""
     root = tk.Tk()
     root.title("Connect Four")
     root.geometry("800x600")
     
-    ConnectFourGUI(root, use_alpha_beta)
+    ConnectFourGUI(root, use_alpha_beta, k)
 
     root.mainloop()
 
 def show_welcome_window():
-    """Displays the welcome window with a checkbox for Alpha-Beta Pruning."""
+    """Displays the welcome window with a checkbox for Alpha-Beta Pruning and a text field for K."""
     # Create a child window for the welcome message
     welcome_window = tk.Tk()
     welcome_window.title("Welcome to Connect Four")
     welcome_window.geometry("400x300")
-    # welcome_window.transient(root)  # Keep it on top of the main game window
 
     # Welcome message
     tk.Label(welcome_window, text="Welcome to Connect Four!", font=("Arial", 16)).pack(pady=20)
@@ -177,12 +177,40 @@ def show_welcome_window():
     tk.Label(welcome_window, text="AI Type:", font=("Arial", 12)).pack(pady=10)
     use_alpha_beta = tk.BooleanVar(value=True)  # Default: Alpha-Beta Pruning enabled
 
+    def toggle_k_field():
+        if use_alpha_beta.get():
+            k_entry.config(state="normal")
+        else:
+            k_entry.config(state="disabled")
+            k_value.set("")  # Clear the value of K if pruning is disabled
+
     tk.Checkbutton(welcome_window, text="Enable Alpha-Beta Pruning", font=("Arial", 10),
-                   variable=use_alpha_beta, onvalue=True, offvalue=False).pack(anchor="w", padx=50)
+                   variable=use_alpha_beta, onvalue=True, offvalue=False, command=toggle_k_field).pack(anchor="w", padx=50)
+
+    # Input for K value
+    k_value = tk.StringVar()
+    tk.Label(welcome_window, text="Pruning parameter (K):", font=("Arial", 10)).pack(pady=10)
+    k_entry = tk.Entry(welcome_window, textvariable=k_value, state="normal", font=("Arial", 10), width=10)
+    k_entry.pack()
 
     # Start Game button
+    def validate_and_start():
+        if use_alpha_beta.get():
+            try:
+                k = int(k_value.get())
+                if k <= 0:
+                    raise ValueError("K must be a positive integer.")
+            except ValueError as e:
+                messagebox.showerror("Invalid Input", f"Invalid value for K: {e}")
+                return
+        else:
+            k = None  # No pruning
+        
+        start_game(None, use_alpha_beta.get(), k)
+
     tk.Button(welcome_window, text="Start Game", font=("Arial", 14),
-              command=lambda: start_game(welcome_window, use_alpha_beta.get())).pack(pady=20)
+              command=validate_and_start).pack(pady=20)
+
     welcome_window.mainloop()
 
 if __name__ == "__main__":
