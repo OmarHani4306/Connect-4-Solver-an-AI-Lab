@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import numpy as np
 import math, random
-import importlib
+import minimax_with_pruning, minimax_no_pruning, expected_minimax
 
 
 # Constants
@@ -63,13 +63,16 @@ class ConnectFourGUI:
 
     def ai_move(self):
         # Dynamically import and run the selected algorithm
-        module = importlib.import_module(self.algorithm)
-        # col, _ = module.run(self.board, self.k)
         col = np.random.choice(COLS)
-
-        while not self.is_valid_location(col):
-            # col, _ = module.run(self.board, self.k)
-            col = np.random.choice(COLS)
+        if self.algorithm == "minimax_with_pruning":
+            col, tree = minimax_with_pruning.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
+        elif self.algorithm == "minimax_no_pruning":
+            col, tree = minimax_no_pruning.run(self.board, self.k, True, self.evaluate_board)
+        elif self.algorithm == "expected_minimax":
+            col, tree = expected_minimax.run(self.board, self.k, self.evaluate_board)
+        elif self.algorithm == "random_algorithm":
+            while not self.is_valid_location(col):
+                col = np.random.choice(COLS)
             
         row = self.top_row[col]
         self.board[row][col] = str(AI)
@@ -165,8 +168,8 @@ def show_welcome_window():
 
     # Create the welcome window
     welcome_window = tk.Tk()
-    welcome_window.title("Welcome to Connect Four")
-    welcome_window.geometry("640x400")
+    welcome_window.title("Connect Four - MiniMax")
+    welcome_window.geometry("640x500")
 
     # Welcome message
     tk.Label(welcome_window, text="Welcome to Connect Four!", font=("Arial", 16)).pack(pady=20)
@@ -179,7 +182,8 @@ def show_welcome_window():
     algorithms = [
         ("Minimax without Pruning", "minimax_no_pruning"),
         ("Minimax with Pruning", "minimax_with_pruning"),
-        ("Expected Minimax", "expected_minimax")
+        ("Expected Minimax", "expected_minimax"),
+        ("Random", "random_algorithm")
     ]
     for text, value in algorithms:
         tk.Radiobutton(
