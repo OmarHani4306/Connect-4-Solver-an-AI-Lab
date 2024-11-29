@@ -1,4 +1,4 @@
-def run(board, depth, alpha, beta, maximizing_player, heuristic_function):
+def run(board, depth, alpha, beta, maximizing_player):
     """
     Placeholder for Minimax with Pruning algorithm.
     """

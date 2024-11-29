@@ -20,7 +20,6 @@ class ConnectFourGUI:
         self.top_row = [ROWS - 1] * COLS  # Tracks the top-most empty row for each column
         self.turn = PLAYER
         self.x = sp.symbols('x')
-        self.evaluate_board = self.x**2
         self.create_widgets()
 
     def create_widgets(self):
@@ -68,11 +67,11 @@ class ConnectFourGUI:
         # Dynamically import and run the selected algorithm
         col = np.random.choice(COLS)
         if self.algorithm == "minimax_with_pruning":
-            col, tree = minimax_with_pruning.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
+            col, tree = minimax_with_pruning.run(self.board, self.k, -float('inf'), float('inf'), True)
         elif self.algorithm == "minimax_no_pruning":
-            col, tree = minimax_no_pruning.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
+            col, tree = minimax_no_pruning.run(self.board, self.k, -float('inf'), float('inf'), True)
         elif self.algorithm == "expected_minimax":
-            col, tree = expected_minimax.run(self.board, self.k, -float('inf'), float('inf'), True, self.evaluate_board)
+            col, tree = expected_minimax.run(self.board, self.k, -float('inf'), float('inf'), True)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
