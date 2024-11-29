@@ -150,23 +150,16 @@ def start_game(welcome_window, algorithm, k):
 
 def show_welcome_window():
     """Displays the welcome window with options to select an AI algorithm and configure settings."""
-    def toggle_k_input():
-        """Show or hide the K input field based on the selected algorithm."""
-        if algorithm_var.get() == "minimax_with_pruning":
-            k_label.pack(pady=5)
-            k_entry.pack(pady=5)
-        else:
-            k_label.pack_forget()
-            k_entry.pack_forget()
+    
+    
 
     def start_game_from_welcome():
         """Starts the game with the selected settings."""
         algorithm = algorithm_var.get()
-        k_value = k_entry.get() if algorithm == "minimax_with_pruning" else None
-        if algorithm == "minimax_with_pruning" and not k_value.isdigit():
-            messagebox.showerror("Invalid Input", "Please enter a valid integer for K.")
-            return
-        start_game(welcome_window, algorithm, int(k_value) if k_value else None)
+        k_value = k_entry.get() if k_entry.get().isdigit() else None
+        if k_value is None:
+            k_value = 5  
+        start_game(welcome_window, algorithm, int(k_value))
 
     # Create the welcome window
     welcome_window = tk.Tk()
@@ -190,12 +183,14 @@ def show_welcome_window():
     for text, value in algorithms:
         tk.Radiobutton(
             welcome_window, text=text, variable=algorithm_var, value=value,
-            font=("Arial", 10), command=toggle_k_input
+            font=("Arial", 10)
         ).pack(anchor="w", padx=50)
 
     # K input field (hidden by default)
     k_label = tk.Label(welcome_window, text="Enter pruning depth (K):", font=("Arial", 10))
     k_entry = tk.Entry(welcome_window)
+    k_label.pack(pady=5)
+    k_entry.pack(pady=5)
 
     # Start game button
     tk.Button(welcome_window, text="Start Game", font=("Arial", 14),
