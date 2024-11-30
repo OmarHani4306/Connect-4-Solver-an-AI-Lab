@@ -1,0 +1,33 @@
+import tkinter as tk
+
+def minimax_tree_visualization(tree):
+    
+    def draw_tree(canvas, tree, x, y, level_gap, node_gap):
+        if tree is None:
+            return
+
+        # Draw current node
+        node_label = f"Move: {tree['move']}\nValue: {tree['value']}"
+        canvas.create_oval(x - 20, y - 20, x + 20, y + 20, fill="lightblue", outline="black")
+        canvas.create_text(x, y, text=node_label)
+
+        # Draw children recursively
+        if 'children' in tree and tree['children']:
+            num_children = len(tree['children'])
+            child_x_start = x - (num_children - 1) * node_gap // 2
+
+            for i, child in enumerate(tree['children']):
+                child_x = child_x_start + i * node_gap
+                child_y = y + level_gap
+                canvas.create_line(x, y + 20, child_x, child_y - 20, fill="black")
+                draw_tree(canvas, child, child_x, child_y, level_gap, node_gap)
+
+    
+    window = tk.Tk()
+    window.title("Minimax Tree Visualization")
+
+    canvas = tk.Canvas(window, width=1200, height=800, bg="white")
+    canvas.pack()
+
+    draw_tree(canvas, tree, x=600, y=50, level_gap=100, node_gap=150)
+    window.mainloop()
