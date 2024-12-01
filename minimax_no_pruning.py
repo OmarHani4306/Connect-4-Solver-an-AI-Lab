@@ -1,3 +1,5 @@
+from helpers import valid_moves, apply_move, is_terminal, heuristic
+
 def minimax(state, depth, maximizingPlayer, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
