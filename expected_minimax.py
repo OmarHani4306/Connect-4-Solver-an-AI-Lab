@@ -1,3 +1,5 @@
+from helpers import valid_moves, apply_move, is_terminal, heuristic
+
 def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
