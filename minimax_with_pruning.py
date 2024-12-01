@@ -1,3 +1,5 @@
+from helpers import valid_moves, apply_move, is_terminal, heuristic
+
 def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
