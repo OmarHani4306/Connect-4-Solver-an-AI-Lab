@@ -1,7 +1,9 @@
 import tkinter as tk
-import minimax from minimax_no_pruning
-import alphabeta_minimax from minimax_with_pruning
-import expectiminimax from expected_minimax
+from minimax_no_pruning import minimax
+from minimax_with_pruning import alphabeta_minimax 
+from expected_minimax import expectiminimax 
+from helpers import *
+
 
 def draw_triangle(canvas, x, y, size, orientation, color, text):
     """
@@ -121,3 +123,7 @@ def play_game(algorithm, max_depth, columns, rows):
         show_tree_gui(tree)
 
     determine_winner(state, columns, rows)
+
+
+if __name__ == "__main__":
+    play_game("minimax", 10, 7, 6)
