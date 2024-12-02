@@ -248,6 +248,10 @@ def heuristic(board):
 def board_to_string(board):
     return ''.join([str(cell) for row in board for cell in row])
 
+def string_to_board(s, rows, cols):
+    return [[int(cell) for cell in s[i * cols:(i + 1) * cols]] for i in range(rows)]
+
+
 def valid_moves(state, columns, rows):
     
     valid = []
@@ -265,7 +269,12 @@ def apply_move(state, column, player, columns, rows):
         index = (rows - 1 - row) * columns + column
         if state[index] == '0':  # If the cell is empty
             return state[:index] + str(player) + state[index + 1:]  # Place the player's disc
+    # print(print_board(string_to_board(state, rows, columns)))
     raise ValueError(f"Column {column} is full")
+
+def print_board(board):
+    for row in board:
+        print(' '.join(map(str, row)))
 
 
 

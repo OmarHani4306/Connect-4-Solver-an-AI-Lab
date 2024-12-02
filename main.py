@@ -72,7 +72,7 @@ class ConnectFourGUI:
         elif self.algorithm == "minimax_no_pruning":
             _, col, tree = minimax_no_pruning.minimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
         elif self.algorithm == "expected_minimax":
-            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
+            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, 'max', self.k, COLS, ROWS)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
@@ -159,7 +159,7 @@ def show_welcome_window():
         algorithm = algorithm_var.get()
         k_value = k_entry.get() if k_entry.get().isdigit() else None
         if k_value is None:
-            k_value = 5  
+            k_value = 4  
         start_game(welcome_window, algorithm, int(k_value))
 
     # Create the welcome window

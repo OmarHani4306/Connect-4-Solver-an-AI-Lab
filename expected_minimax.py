@@ -4,8 +4,8 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
     
     if is_terminal(state, depth, max_depth):
         value = heuristic(state)  
-        if print_tree:
-            print(f"{'|   ' * depth}Leaf Node: Heuristic={value}")
+        # if print_tree:
+        #     print(f"{'|   ' * depth}Leaf Node: Heuristic={value}")
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
     # Create a node for the tree
