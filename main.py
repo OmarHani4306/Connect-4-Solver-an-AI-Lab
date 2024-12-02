@@ -78,7 +78,7 @@ class ConnectFourGUI:
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
-        # show_tree_gui(tree)
+        show_tree_gui(tree)
         row = self.top_row[col]
         self.board[row][col] = str(AI)
         self.top_row[col] -= 1

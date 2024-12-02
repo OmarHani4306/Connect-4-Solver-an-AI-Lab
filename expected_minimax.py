@@ -20,7 +20,7 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
         for column in valid_moves(state, COLS, ROWS):  
             # Simulate AI move
             new_state = apply_move(state, column, 1, COLS, ROWS)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1,True ,'chance', max_depth)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1,False ,'chance', max_depth)
 
             if eval > max_eval:
                 max_eval = eval
@@ -40,7 +40,7 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
         for column in valid_moves(state, COLS, ROWS):  
             # Simulate Human move
             new_state = apply_move(state, column, 2, COLS, ROWS)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1, False,'chance', max_depth)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1, True,'chance', max_depth)
 
             if eval < min_eval:
                 min_eval = eval
