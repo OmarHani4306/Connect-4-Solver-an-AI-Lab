@@ -1,5 +1,6 @@
 def heuristic(board):
     score = 0
+    # print(board)
     for i in range(6):
         for j in range(7):
             if board[i * 7 + j] == "0":
@@ -244,6 +245,8 @@ def heuristic(board):
 
     return score
 
+def board_to_string(board):
+    return ''.join([str(cell) for row in board for cell in row])
 
 def valid_moves(state, columns, rows):
     

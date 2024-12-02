@@ -126,4 +126,4 @@ def play_game(algorithm, max_depth, columns, rows):
 
 
 if __name__ == "__main__":
-    play_game("minimax", 10, 7, 6)
+    play_game("expectiminimax", 3, 7, 6)

@@ -4,10 +4,11 @@ import numpy as np
 import math, random
 import minimax_with_pruning, minimax_no_pruning, expected_minimax
 import sympy as sp
-
+from helpers import *
+from game_flow import *
 
 # Constants
-ROWS, COLS = 4, 4
+ROWS, COLS = 6, 7
 PLAYER, AI = 1, 2
 EMPTY = 0
 
@@ -67,15 +68,15 @@ class ConnectFourGUI:
         # Dynamically import and run the selected algorithm
         col = np.random.choice(COLS)
         if self.algorithm == "minimax_with_pruning":
-            col, tree = minimax_with_pruning.run(self.board, self.k, -float('inf'), float('inf'), True)
+            _, col, tree = minimax_with_pruning.alphabeta_minimax(board_to_string(self.board), 0, -float('inf'), float('inf'), True, self.k,COLS, ROWS)
         elif self.algorithm == "minimax_no_pruning":
-            col, tree = minimax_no_pruning.run(self.board, self.k, -float('inf'), float('inf'), True)
+            _, col, tree = minimax_no_pruning.minimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
         elif self.algorithm == "expected_minimax":
-            col, tree = expected_minimax.run(self.board, self.k, -float('inf'), float('inf'), True)
+            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
-            
+        # show_tree_gui(tree)
         row = self.top_row[col]
         self.board[row][col] = str(AI)
         self.top_row[col] -= 1

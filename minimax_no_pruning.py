@@ -3,7 +3,7 @@ from helpers import valid_moves, apply_move, is_terminal, heuristic
 def minimax(state, depth, maximizingPlayer, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
-        value = heuristic(state, columns, rows)  # Implement your heuristic here
+        value = heuristic(state)  # Implement your heuristic here
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
     tree = {'type': 'max' if maximizingPlayer else 'min', 'value': None, 'move': None, 'children': []}

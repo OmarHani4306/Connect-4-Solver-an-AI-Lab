@@ -3,7 +3,7 @@ from helpers import valid_moves, apply_move, is_terminal, heuristic
 def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
-        value = heuristic(state, columns, rows)  
+        value = heuristic(state)  
         if print_tree:
             print(f"{'|   ' * depth}Leaf Node: Heuristic={value}")
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
