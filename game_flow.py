@@ -111,7 +111,7 @@ def play_game(algorithm, max_depth, columns, rows):
         elif algorithm == "alphabeta":
             _, best_move, tree = alphabeta_minimax(state, turn_depth, -float('inf'), float('inf'), True, max_depth, columns, rows)
         elif algorithm == "expectiminimax":
-            _, best_move, tree = expectiminimax(state, turn_depth, 'max', max_depth, columns, rows)
+            _, best_move, tree = expectiminimax(state, turn_depth, True,'max', max_depth, columns, rows)
         else:
             raise ValueError("Invalid algorithm. Choose 'minimax', 'alphabeta', or 'expectiminimax'.")
 
