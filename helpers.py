@@ -248,60 +248,60 @@ def heuristic(board):
 def board_to_string(board):
     return ''.join([str(cell) for row in board for cell in row])
 
+# change
 def valid_moves(state, columns, rows):
-    
     valid = []
     for col in range(columns):
-        if state[col] == '0':  # Top cell of the column
-            valid.append(col)
+        index = (rows - 1) * columns + col
+        if (state // (10 ** index)) % 10 == 0:
+            valid.append(columns - col - 1)
     return valid
 
 
-
+#change
 def apply_move(state, column, player, columns, rows):
-    
-    # Start from the lowest row (rightmost character in the column)
     for row in range(rows):
-        index = (rows - 1 - row) * columns + column
-        if state[index] == '0':  # If the cell is empty
-            return state[:index] + str(player) + state[index + 1:]  # Place the player's disc
-    raise ValueError(f"Column {column} is full")
+        index = row*columns + (columns - column -1)
+        if (state // (10 ** index)) % 10 == 0:
+            return state + (player * (10 ** index))
+    raise ValueError(f"Column {column} is full.")
 
 
-
-def is_terminal(state, depth, max_depth):
-    
+#change
+def is_terminal(state, depth, max_depth, columns, rows):
+    return depth >= max_depth or len(valid_moves(state, columns, rows)) == 0 
    
-    # Check if the board is full or depth is reached
-    return depth >= max_depth or '0' not in state
 
-
-
+#change
 def count_connected_fours(state, player, columns, rows):
-    
+    def get_cell(state, row, col):
+        position = (rows - 1 - row) * columns + col
+        return (state // (3 ** position)) % 3  
+
     count = 0
+
     # Horizontal
     for row in range(rows):
         for col in range(columns - 3):  # Check up to column - 3
-            if all(state[(rows - 1 - row) * columns + col + i] == str(player) for i in range(4)):
+            if all(get_cell(state, row, col + i) == player for i in range(4)):
                 count += 1
 
     # Vertical
     for col in range(columns):
         for row in range(rows - 3):  # Check up to row - 3
-            if all(state[(rows - 1 - row - i) * columns + col] == str(player) for i in range(4)):
+            if all(get_cell(state, row + i, col) == player for i in range(4)):
                 count += 1
 
     # Diagonal (Bottom-Left to Top-Right)
     for row in range(rows - 3):
         for col in range(columns - 3):
-            if all(state[(rows - 1 - row - i) * columns + col + i] == str(player) for i in range(4)):
+            if all(get_cell(state, row + i, col + i) == player for i in range(4)):
                 count += 1
 
     # Diagonal (Bottom-Right to Top-Left)
     for row in range(rows - 3):
         for col in range(3, columns):
-            if all(state[(rows - 1 - row - i) * columns + col - i] == str(player) for i in range(4)):
+            if all(get_cell(state, row + i, col - i) == player for i in range(4)):
                 count += 1
 
     return count

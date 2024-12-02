@@ -1,9 +1,9 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
 
 def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth, columns, rows, print_tree=True):
-    
-    if is_terminal(state, depth, max_depth):
-        value = heuristic(state)  
+    print(state)
+    if is_terminal(state, depth, max_depth, columns, rows):
+        value = heuristic(str(state).zfill(rows*columns))  
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
     tree = {'type': 'max' if maximizingPlayer else 'min', 'value': None, 'move': None, 'children': []}

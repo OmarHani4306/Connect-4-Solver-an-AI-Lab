@@ -9,7 +9,7 @@ from game_flow import *
 
 # Constants
 ROWS, COLS = 6, 7
-PLAYER, AI = 1, 2
+PLAYER, AI = 2, 1
 EMPTY = 0
 
 class ConnectFourGUI:
@@ -68,15 +68,15 @@ class ConnectFourGUI:
         # Dynamically import and run the selected algorithm
         col = np.random.choice(COLS)
         if self.algorithm == "minimax_with_pruning":
-            _, col, tree = minimax_with_pruning.alphabeta_minimax(board_to_string(self.board), 0, -float('inf'), float('inf'), True, self.k,COLS, ROWS)
+            _, col, tree = minimax_with_pruning.alphabeta_minimax(int(board_to_string(self.board)), 0, -float('inf'), float('inf'), False, self.k,COLS, ROWS)
         elif self.algorithm == "minimax_no_pruning":
-            _, col, tree = minimax_no_pruning.minimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
+            _, col, tree = minimax_no_pruning.minimax(int(board_to_string(self.board)), 0, False, self.k, COLS, ROWS)
         elif self.algorithm == "expected_minimax":
-            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
+            _, col, tree = expected_minimax.expectiminimax(int(board_to_string(self.board)), 0, False, 'min', self.k, COLS, ROWS)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
-        # show_tree_gui(tree)
+        show_tree_gui(tree)
         row = self.top_row[col]
         self.board[row][col] = str(AI)
         self.top_row[col] -= 1
@@ -151,9 +151,6 @@ def start_game(welcome_window, algorithm, k):
 
 def show_welcome_window():
     """Displays the welcome window with options to select an AI algorithm and configure settings."""
-    
-    
-
     def start_game_from_welcome():
         """Starts the game with the selected settings."""
         algorithm = algorithm_var.get()
@@ -201,4 +198,3 @@ def show_welcome_window():
 
 if __name__ == "__main__":
     show_welcome_window()
-

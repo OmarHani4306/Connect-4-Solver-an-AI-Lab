@@ -1,9 +1,10 @@
-from helpers import valid_moves, apply_move, is_terminal, heuristic
+from helpers import valid_moves, apply_move, is_terminal, heuristic 
+# state is integer
 
 def minimax(state, depth, maximizingPlayer, max_depth, columns, rows, print_tree=True):
-    
-    if is_terminal(state, depth, max_depth):
-        value = heuristic(state)  # Implement your heuristic here
+    if is_terminal(state, depth, max_depth, columns, rows):
+
+        value = heuristic(str(state).zfill(rows*columns))  # change
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
     tree = {'type': 'max' if maximizingPlayer else 'min', 'value': None, 'move': None, 'children': []}
