@@ -1,6 +1,6 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
 
-def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree=True):
+def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns, rows, print_tree=True):
     
     if is_terminal(state, depth, max_depth):
         value = heuristic(state, columns, rows)  
@@ -18,7 +18,7 @@ def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree
         for column in valid_moves(state, columns, rows):  
             # Simulate AI move
             new_state = apply_move(state, column, 1, columns, rows)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1, 'chance', max_depth, columns, rows, print_tree)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1,True ,'chance', max_depth, columns, rows, print_tree)
 
             if eval > max_eval:
                 max_eval = eval
@@ -38,7 +38,7 @@ def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree
         for column in valid_moves(state, columns, rows):  
             # Simulate Human move
             new_state = apply_move(state, column, 2, columns, rows)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1, 'chance', max_depth, columns, rows, print_tree)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1, False,'chance', max_depth, columns, rows, print_tree)
 
             if eval < min_eval:
                 min_eval = eval
@@ -56,20 +56,20 @@ def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree
 
         for column in valid_moves(state, columns, rows):  # Simulate dropping into current, left, and right columns
             # Center column
-            center_state = apply_move(state, column, 1 if depth % 2 == 0 else 2, columns, rows)
-            center_eval, _, center_tree = expectiminimax(center_state, depth + 1, 'min' if depth % 2 == 0 else 'max', max_depth, columns, rows, print_tree)
+            center_state = apply_move(state, column, 1 if maximizing_player else 2, columns, rows)
+            center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             # Left neighbor
             left_eval = 0
             if column > 0:
-                left_state = apply_move(state, column - 1, 1 if depth % 2 == 0 else 2, columns, rows)
-                left_eval, _, _ = expectiminimax(left_state, depth + 1, 'min' if depth % 2 == 0 else 'max', max_depth, columns, rows, print_tree)
+                left_state = apply_move(state, column - 1, 1 if maximizing_player else 2, columns, rows)
+                left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             # Right neighbor
             right_eval = 0
             if column < columns - 1:
-                right_state = apply_move(state, column + 1, 1 if depth % 2 == 0 else 2, columns, rows)
-                right_eval, _, _ = expectiminimax(right_state, depth + 1, 'min' if depth % 2 == 0 else 'max', max_depth, columns, rows, print_tree)
+                right_state = apply_move(state, column + 1, 1 if maximizing_player else 2, columns, rows)
+                right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             
             if column == 0:  # First column
@@ -80,7 +80,7 @@ def expectiminimax(state, depth, node_type, max_depth, columns, rows, print_tree
                 expected_value += 0.6 * center_eval + 0.2 * left_eval + 0.2 * right_eval
 
             
-            chance_children.append({'type': 'min' if depth % 2 == 0 else 'max', 'value': center_eval, 'move': column, 'children': center_tree['children']})
+            chance_children.append({'type': 'min' if not maximizing_player else 'max', 'value': center_eval, 'move': column, 'children': center_tree['children']})
 
         tree['value'] = expected_value
         tree['children'] = chance_children
