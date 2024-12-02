@@ -1,6 +1,7 @@
 from helpers import *
+from utils import ROWS, COLS, print_tree
 
-def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns, rows, print_tree=True):
+def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
     
     if is_terminal(state, depth, max_depth):
         value = heuristic(state)  
@@ -14,12 +15,12 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
     if node_type == 'max':
         max_eval = -float('inf')
         best_move = None
-        # print(print_board(string_to_board(state, rows, columns)))
+        # print(print_board(string_to_board(state, ROWS, COLS)))
 
-        for column in valid_moves(state, columns, rows):  
+        for column in valid_moves(state, COLS, ROWS):  
             # Simulate AI move
-            new_state = apply_move(state, column, 1, columns, rows)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1,True ,'chance', max_depth, columns, rows, print_tree)
+            new_state = apply_move(state, column, 1, COLS, ROWS)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1,True ,'chance', max_depth)
 
             if eval > max_eval:
                 max_eval = eval
@@ -36,10 +37,10 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
         min_eval = float('inf')
         best_move = None
 
-        for column in valid_moves(state, columns, rows):  
+        for column in valid_moves(state, COLS, ROWS):  
             # Simulate Human move
-            new_state = apply_move(state, column, 2, columns, rows)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1, False,'chance', max_depth, columns, rows, print_tree)
+            new_state = apply_move(state, column, 2, COLS, ROWS)
+            eval, _, child_tree = expectiminimax(new_state, depth + 1, False,'chance', max_depth)
 
             if eval < min_eval:
                 min_eval = eval
@@ -55,32 +56,32 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
         expected_value = 0
         chance_children = []
 
-        valid_moves_cols = valid_moves(state, columns, rows)
+        valid_moves_cols = valid_moves(state, COLS, ROWS)
 
-        for column in valid_moves_cols:  # Simulate dropping into current, left, and right columns
+        for column in valid_moves_cols:  # Simulate dropping into current, left, and right COLS
             # Center column
-            center_state = apply_move(state, column, 1 if maximizing_player else 2, columns, rows)
-            center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
+            center_state = apply_move(state, column, 1 if maximizing_player else 2, COLS, ROWS)
+            center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             # Left neighbor
             left_eval = 0
             if column > 0 and column-1 in valid_moves_cols:
 
-                left_state = apply_move(state, column - 1, 1 if maximizing_player else 2, columns, rows)
-                left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
+                left_state = apply_move(state, column - 1, 1 if maximizing_player else 2, COLS, ROWS)
+                left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             # Right neighbor
             right_eval = 0
-            if column < columns - 1 and column+1 in valid_moves_cols:
-                right_state = apply_move(state, column + 1, 1 if maximizing_player else 2, columns, rows)
-                right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
+            if column < COLS - 1 and column+1 in valid_moves_cols:
+                right_state = apply_move(state, column + 1, 1 if maximizing_player else 2, COLS, ROWS)
+                right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             
             if column == 0:  # First column
                 expected_value += 0.6 * center_eval + 0.4 * right_eval
-            elif column == columns - 1:  # Last column
+            elif column == COLS - 1:  # Last column
                 expected_value += 0.6 * center_eval + 0.4 * left_eval
-            else:  # Middle columns
+            else:  # Middle COLS
                 expected_value += 0.6 * center_eval + 0.2 * left_eval + 0.2 * right_eval
 
             

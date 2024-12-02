@@ -6,6 +6,8 @@ import minimax_with_pruning, minimax_no_pruning, expected_minimax
 import sympy as sp
 from helpers import *
 from game_flow import *
+from utils import ROWS, COLS
+
 
 # Constants
 ROWS, COLS = 6, 7
@@ -72,7 +74,7 @@ class ConnectFourGUI:
         elif self.algorithm == "minimax_no_pruning":
             _, col, tree = minimax_no_pruning.minimax(board_to_string(self.board), 0, True, self.k, COLS, ROWS)
         elif self.algorithm == "expected_minimax":
-            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, 'max', self.k, COLS, ROWS)
+            _, col, tree = expected_minimax.expectiminimax(board_to_string(self.board), 0, True, 'max', self.k)
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
