@@ -270,7 +270,7 @@ def apply_move(state, column, player, columns, rows):
         if state[index] == '0':  # If the cell is empty
             return state[:index] + str(player) + state[index + 1:]  # Place the player's disc
     # print(print_board(string_to_board(state, rows, columns)))
-    raise ValueError(f"Column {column} is full")
+    return "-1"  # Invalid move
 
 def print_board(board):
     for row in board:
