@@ -1,3 +1,5 @@
+from utils import *
+
 def heuristic(board):
     score = 0
     # print(board)
@@ -249,68 +251,75 @@ def board_to_string(board):
     return ''.join([str(cell) for row in board for cell in row])
 
 # change
-def valid_moves(state, columns, rows):
+# def valid_moves(state):
+#     valid = []
+#     for col in range(COLS):
+#         index = (ROWS - 1) * COLS + col
+#         if (state // (10 ** index)) % 10 == 0:
+#             valid.append(COLS - col - 1)
+#     return valid
+
+
+def valid_moves(state):
     valid = []
-    for col in range(columns):
-        index = (rows - 1) * columns + col
-        if (state // (10 ** index)) % 10 == 0:
-            valid.append(columns - col - 1)
+    for col in range(41,34,-1):
+        if (state // (10 ** col)) % 10 == 0:
+            valid.append(42 - col - 1)
     return valid
 
-
 #change
-def apply_move(state, column, player, columns, rows):
-    for row in range(rows):
-        index = row*columns + (columns - column -1)
+def apply_move(state, column, player):
+    for row in range(ROWS):
+        index = row*COLS + (COLS - column -1)
         if (state // (10 ** index)) % 10 == 0:
             return state + (player * (10 ** index))
     raise ValueError(f"Column {column} is full.")
 
 
 #change
-def is_terminal(state, depth, max_depth, columns, rows):
-    return depth >= max_depth or len(valid_moves(state, columns, rows)) == 0 
+def is_terminal(state, depth, max_depth):
+    return depth >= max_depth or len(valid_moves(state)) == 0 
    
 
 #change
-def count_connected_fours(state, player, columns, rows):
+def count_connected_fours(state, player):
     def get_cell(state, row, col):
-        position = (rows - 1 - row) * columns + col
+        position = (ROWS - 1 - row) * COLS + col
         return (state // (3 ** position)) % 3  
 
     count = 0
 
     # Horizontal
-    for row in range(rows):
-        for col in range(columns - 3):  # Check up to column - 3
+    for row in range(ROWS):
+        for col in range(COLS - 3):  # Check up to column - 3
             if all(get_cell(state, row, col + i) == player for i in range(4)):
                 count += 1
 
     # Vertical
-    for col in range(columns):
-        for row in range(rows - 3):  # Check up to row - 3
+    for col in range(COLS):
+        for row in range(ROWS - 3):  # Check up to row - 3
             if all(get_cell(state, row + i, col) == player for i in range(4)):
                 count += 1
 
     # Diagonal (Bottom-Left to Top-Right)
-    for row in range(rows - 3):
-        for col in range(columns - 3):
+    for row in range(ROWS - 3):
+        for col in range(COLS - 3):
             if all(get_cell(state, row + i, col + i) == player for i in range(4)):
                 count += 1
 
     # Diagonal (Bottom-Right to Top-Left)
-    for row in range(rows - 3):
-        for col in range(3, columns):
+    for row in range(ROWS - 3):
+        for col in range(3, COLS):
             if all(get_cell(state, row + i, col - i) == player for i in range(4)):
                 count += 1
 
     return count
 
 
-def determine_winner(state, columns, rows):
+def determine_winner(state):
    
-    ai_score = count_connected_fours(state, 1, columns, rows)
-    human_score = count_connected_fours(state, 2, columns, rows)
+    ai_score = count_connected_fours(state, 1)
+    human_score = count_connected_fours(state, 2)
 
     print("Game Over!")
     if ai_score > human_score:

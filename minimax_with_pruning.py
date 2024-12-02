@@ -1,9 +1,10 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
+from utils import *
 
-def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth, columns, rows, print_tree=True):
-    print(state)
-    if is_terminal(state, depth, max_depth, columns, rows):
-        value = heuristic(str(state).zfill(rows*columns))  
+def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
+    # print(state)
+    if is_terminal(state, depth, max_depth):
+        value = heuristic(str(state).zfill(ROWS*COLS))  
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
     tree = {'type': 'max' if maximizingPlayer else 'min', 'value': None, 'move': None, 'children': []}
@@ -12,9 +13,9 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth, co
         max_eval = -float('inf')
         best_move = None
 
-        for column in valid_moves(state, columns, rows):  
-            new_state = apply_move(state, column, 1, columns, rows)  
-            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, False, max_depth, columns, rows, print_tree)
+        for column in valid_moves(state):  
+            new_state = apply_move(state, column, 1)  
+            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, False)
 
             if eval > max_eval:
                 max_eval = eval
@@ -34,9 +35,9 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth, co
         min_eval = float('inf')
         best_move = None
 
-        for column in valid_moves(state, columns, rows):  
-            new_state = apply_move(state, column, 2, columns, rows)  
-            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, True, max_depth, columns, rows, print_tree)
+        for column in valid_moves(state):  
+            new_state = apply_move(state, column, 2)  
+            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, True)
 
             if eval < min_eval:
                 min_eval = eval

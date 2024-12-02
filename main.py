@@ -6,17 +6,17 @@ import minimax_with_pruning, minimax_no_pruning, expected_minimax
 import sympy as sp
 from helpers import *
 from game_flow import *
+from utils import *
 
 # Constants
-ROWS, COLS = 6, 7
+# ROWS, COLS = 6, 7
 PLAYER, AI = 2, 1
 EMPTY = 0
 
 class ConnectFourGUI:
-    def __init__(self, root, algorithm, k=None):
+    def __init__(self, root, algorithm):
         self.root = root
         self.algorithm = algorithm
-        self.k = k
         self.board = [[str(EMPTY) for _ in range(COLS)] for _ in range(ROWS)]
         self.top_row = [ROWS - 1] * COLS  # Tracks the top-most empty row for each column
         self.turn = PLAYER
@@ -68,11 +68,11 @@ class ConnectFourGUI:
         # Dynamically import and run the selected algorithm
         col = np.random.choice(COLS)
         if self.algorithm == "minimax_with_pruning":
-            _, col, tree = minimax_with_pruning.alphabeta_minimax(int(board_to_string(self.board)), 0, -float('inf'), float('inf'), False, self.k,COLS, ROWS)
+            _, col, tree = minimax_with_pruning.alphabeta_minimax(int(board_to_string(self.board)), 0, -float('inf'), float('inf'), True)
         elif self.algorithm == "minimax_no_pruning":
-            _, col, tree = minimax_no_pruning.minimax(int(board_to_string(self.board)), 0, False, self.k, COLS, ROWS)
+            _, col, tree = minimax_no_pruning.minimax(int(board_to_string(self.board)), 0, True)
         elif self.algorithm == "expected_minimax":
-            _, col, tree = expected_minimax.expectiminimax(int(board_to_string(self.board)), 0, False, 'min', self.k, COLS, ROWS)
+            _, col, tree = expected_minimax.expectiminimax(int(board_to_string(self.board)), 0, True, 'max')
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
@@ -142,22 +142,21 @@ class ConnectFourGUI:
         self.root.destroy()
 
 
-def start_game(welcome_window, algorithm, k):
+def start_game(welcome_window, algorithm):
     root = tk.Tk()
     root.title("Connect Four")
     root.geometry("800x600")
-    ConnectFourGUI(root, algorithm, k)
+    ConnectFourGUI(root, algorithm)
     root.mainloop()
 
 def show_welcome_window():
     """Displays the welcome window with options to select an AI algorithm and configure settings."""
     def start_game_from_welcome():
+        global max_depth
         """Starts the game with the selected settings."""
         algorithm = algorithm_var.get()
-        k_value = k_entry.get() if k_entry.get().isdigit() else None
-        if k_value is None:
-            k_value = 5  
-        start_game(welcome_window, algorithm, int(k_value))
+        max_depth = k_entry.get() if k_entry.get().isdigit() else None
+        start_game(welcome_window, algorithm)
 
     # Create the welcome window
     welcome_window = tk.Tk()
