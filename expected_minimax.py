@@ -19,10 +19,6 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
         for column in valid_moves(state, columns, rows):  
             # Simulate AI move
             new_state = apply_move(state, column, 1, columns, rows)
-            if new_state == "-1":
-                print(column)
-                print(print_board(string_to_board(new_state, rows, columns)))
-                continue
             eval, _, child_tree = expectiminimax(new_state, depth + 1,True ,'chance', max_depth, columns, rows, print_tree)
 
             if eval > max_eval:
@@ -43,10 +39,6 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
         for column in valid_moves(state, columns, rows):  
             # Simulate Human move
             new_state = apply_move(state, column, 2, columns, rows)
-            if new_state == "-1":
-                print(column)
-                print(print_board(string_to_board(new_state, rows, columns)))
-                continue
             eval, _, child_tree = expectiminimax(new_state, depth + 1, False,'chance', max_depth, columns, rows, print_tree)
 
             if eval < min_eval:
@@ -68,11 +60,6 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
         for column in valid_moves_cols:  # Simulate dropping into current, left, and right columns
             # Center column
             center_state = apply_move(state, column, 1 if maximizing_player else 2, columns, rows)
-            if center_state == "-1":
-                print("0")
-                print(column)
-                print(print_board(string_to_board(center_state, rows, columns)))
-                continue
             center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             # Left neighbor
@@ -80,22 +67,12 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth, columns
             if column > 0 and column-1 in valid_moves_cols:
 
                 left_state = apply_move(state, column - 1, 1 if maximizing_player else 2, columns, rows)
-                if left_state == "-1":
-                    print("-1")
-                    print(column)
-                    print(print_board(string_to_board(left_state, rows, columns)))
-                    continue
                 left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             # Right neighbor
             right_eval = 0
             if column < columns - 1 and column+1 in valid_moves_cols:
                 right_state = apply_move(state, column + 1, 1 if maximizing_player else 2, columns, rows)
-                if right_state == "-1":
-                    print("+1")
-                    print(column)
-                    print(print_board(string_to_board(right_state, rows, columns)))
-                    continue
                 right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth, columns, rows, print_tree)
 
             
