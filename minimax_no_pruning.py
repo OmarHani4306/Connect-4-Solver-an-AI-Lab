@@ -4,13 +4,12 @@ from utils import *
 
 memo = {}
 
-def minimax(state, depth, maximizingPlayer):
-    global MAX_DEPTH
-    # print(MAX_DEPTH)
+def minimax(state, depth, maximizingPlayer, max_depth):
+    # print(max_depth)
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
     
-    if is_terminal(state, depth, MAX_DEPTH):
+    if is_terminal(state, depth, max_depth):
 
         value = heuristic(str(state).zfill(ROWS*COLS))  # change
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
@@ -23,7 +22,7 @@ def minimax(state, depth, maximizingPlayer):
 
         for column in valid_moves(state):  # Pass rows and columns
             new_state = apply_move(state, column, 1)  # Pass rows and columns
-            eval, _, child_tree = minimax(new_state, depth + 1, False)
+            eval, _, child_tree = minimax(new_state, depth + 1, False, max_depth)
 
             if eval > max_eval:
                 max_eval = eval
@@ -43,7 +42,7 @@ def minimax(state, depth, maximizingPlayer):
 
         for column in valid_moves(state):  # Pass rows and columns
             new_state = apply_move(state, column, 2)  # Pass rows and columns
-            eval, _, child_tree = minimax(new_state, depth + 1, True)
+            eval, _, child_tree = minimax(new_state, depth + 1, True, max_depth)
 
             if eval < min_eval:
                 min_eval = eval
@@ -63,7 +62,7 @@ def main():
     # Define constants
     global ROWS, COLS, MAX_DEPTH
     ROWS, COLS = 6, 7  # Example for a Connect Four board
-    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
+    max_depth = 8  # Define how deep the minimax algorithm will explore
 
     # Example initial state and depth configuration
     initial_state = 0  # Representing the empty board as an integer
@@ -73,7 +72,7 @@ def main():
     start_time = time.time()
 
     # Test minimax
-    score, best_move, tree_info = minimax(initial_state, depth=0, maximizingPlayer=maximizing_player)
+    score, best_move, tree_info = minimax(initial_state, depth=0, maximizingPlayer=maximizing_player, max_depth=max_depth)
 
     # End the timer
     end_time = time.time()

@@ -1,16 +1,15 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
-from utils import *
+from utils import ROWS, COLS, MAX_DEPTH
 
 memo = {}
 
-def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
-    global MAX_DEPTH
+def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth):
     # print(state)
-    print(MAX_DEPTH)
+    # print(max_depth)
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
 
-    if is_terminal(state, depth, MAX_DEPTH):
+    if is_terminal(state, depth, max_depth):
         value = heuristic(str(state).zfill(ROWS*COLS))  
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
@@ -22,7 +21,7 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
 
         for column in valid_moves(state):  
             new_state = apply_move(state, column, 1)  
-            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, False)
+            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, False, max_depth)
 
             if eval > max_eval:
                 max_eval = eval
@@ -45,7 +44,7 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
 
         for column in valid_moves(state):  
             new_state = apply_move(state, column, 2)  
-            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, True)
+            eval, _, child_tree = alphabeta_minimax(new_state, depth + 1, alpha, beta, True, max_depth)
 
             if eval < min_eval:
                 min_eval = eval
@@ -63,12 +62,13 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
         return min_eval, best_move, tree
     
 import time
-
+def fn():
+    print(MAX_DEPTH)
 def main():
     # Define constants
     global ROWS, COLS, MAX_DEPTH
     ROWS, COLS = 6, 7  # Example for a Connect Four board
-    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
+    max_depth = 12  # Define how deep the minimax algorithm will explore
 
     # Example initial state and depth configuration
     initial_state = 0  # Representing the empty board as an integer
@@ -78,7 +78,7 @@ def main():
     start_time = time.time()
 
     # Test minimax
-    score, best_move, tree_info = alphabeta_minimax(initial_state, 0, -float('inf'), float('inf') , maximizing_player)
+    score, best_move, tree_info = alphabeta_minimax(initial_state, 0, -float('inf'), float('inf') , maximizing_player, max_depth)
 
     # End the timer
     end_time = time.time()

@@ -3,12 +3,12 @@ from utils import *
 
 memo = {}
 
-def expectiminimax(state, depth, maximizing_player,node_type):
-
+def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
+    # print(max_depth)
     if (state, node_type) in memo:
         return memo[(state, node_type)]
 
-    if is_terminal(state, depth, MAX_DEPTH):
+    if is_terminal(state, depth, max_depth):
         
         value = heuristic(str(state).zfill(42))  
         # if print_tree:
@@ -26,7 +26,7 @@ def expectiminimax(state, depth, maximizing_player,node_type):
         for column in valid_moves(state): 
             # Simulate AI move
             new_state = apply_move(state, column, 1)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1,False ,'chance')
+            eval, _, child_tree = expectiminimax(new_state, depth + 1,False ,'chance', max_depth)
 
             if eval > max_eval:
                 max_eval = eval
@@ -47,7 +47,7 @@ def expectiminimax(state, depth, maximizing_player,node_type):
         for column in valid_moves(state):  
             # Simulate Human move
             new_state = apply_move(state, column, 2)
-            eval, _, child_tree = expectiminimax(new_state, depth + 1, True,'chance')
+            eval, _, child_tree = expectiminimax(new_state, depth + 1, True,'chance', max_depth)
 
             if eval < min_eval:
                 min_eval = eval
@@ -69,20 +69,20 @@ def expectiminimax(state, depth, maximizing_player,node_type):
         for column in valid_moves_columns:  # Simulate dropping into current, left, and right columns
             # Center column
             center_state = apply_move(state, column, 1 if maximizing_player else 2)
-            center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max')
+            center_eval, _, center_tree = expectiminimax(center_state, depth + 1,not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             # Left neighbor
             left_eval = 0
             if column > 0 and column-1 in valid_moves_columns:
 
                 left_state = apply_move(state, column - 1, 1 if maximizing_player else 2)
-                left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max')
+                left_eval, _, _ = expectiminimax(left_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             # Right neighbor
             right_eval = 0
             if column < COLS - 1 and column+1 in valid_moves_columns:
                 right_state = apply_move(state, column + 1, 1 if maximizing_player else 2)
-                right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max')
+                right_eval, _, _ = expectiminimax(right_state, depth + 1, not maximizing_player ,'min' if not maximizing_player else 'max', max_depth)
 
             
             if column == 0:  # First column
@@ -106,7 +106,7 @@ def main():
     # Define constants
     global ROWS, COLS, MAX_DEPTH
     ROWS, COLS = 6, 7  # Example for a Connect Four board
-    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
+    max_depth = 8  # Define how deep the minimax algorithm will explore
 
     # Example initial state and depth configuration
     initial_state = 0  # Representing the empty board as an integer
@@ -116,7 +116,7 @@ def main():
     start_time = time.time()
 
     # Test minimax
-    score, best_move, tree_info = expectiminimax(initial_state, 0, maximizing_player, 'max')
+    score, best_move, tree_info = expectiminimax(initial_state, 0, maximizing_player, 'max', max_depth)
 
     # End the timer
     end_time = time.time()
