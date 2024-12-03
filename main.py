@@ -144,21 +144,24 @@ class ConnectFourGUI:
 
 
 def start_game(welcome_window, algorithm):
+    global MAX_DEPTH
     root = tk.Tk()
     root.title("Connect Four")
     root.geometry("800x600")
     ConnectFourGUI(root, algorithm)
     root.mainloop()
 
+def start_game_from_welcome(algorithm_var, k_entry, welcome_window):
+    """Starts the game with the selected settings."""
+    global MAX_DEPTH
+    algorithm = algorithm_var.get()
+    MAX_DEPTH = k_entry.get() if k_entry.get().isdigit() else None
+    if MAX_DEPTH == None:
+        MAX_DEPTH = 3
+    start_game(welcome_window, algorithm)
+
 def show_welcome_window():
     """Displays the welcome window with options to select an AI algorithm and configure settings."""
-    def start_game_from_welcome():
-        """Starts the game with the selected settings."""
-        algorithm = algorithm_var.get()
-        MAX_DEPTH = k_entry.get() if k_entry.get().isdigit() else None
-        if MAX_DEPTH == None:
-            MAX_DEPTH = 3
-        start_game(welcome_window, algorithm)
 
     # Create the welcome window
     welcome_window = tk.Tk()
@@ -193,7 +196,7 @@ def show_welcome_window():
 
     # Start game button
     tk.Button(welcome_window, text="Start Game", font=("Arial", 14),
-              command=start_game_from_welcome).pack(pady=20)
+              command=lambda: start_game_from_welcome(algorithm_var, k_entry, welcome_window)).pack(pady=20)
 
     welcome_window.mainloop()
 

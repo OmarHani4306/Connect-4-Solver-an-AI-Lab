@@ -4,8 +4,9 @@ from utils import *
 memo = {}
 
 def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
+    global MAX_DEPTH
     # print(state)
-    
+    print(MAX_DEPTH)
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
 
