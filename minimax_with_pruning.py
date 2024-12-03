@@ -1,9 +1,15 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
 from utils import *
 
+memo = {}
+
 def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
     # print(state)
-    if is_terminal(state, depth, max_depth):
+    
+    if (state, maximizingPlayer) in memo:
+        return memo[(state, maximizingPlayer)]
+
+    if is_terminal(state, depth, MAX_DEPTH):
         value = heuristic(str(state).zfill(ROWS*COLS))  
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
 
@@ -29,6 +35,7 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
 
         tree['value'] = max_eval
         tree['move'] = best_move
+        memo[(state, maximizingPlayer)] = max_eval, best_move, tree
         return max_eval, best_move, tree
 
     else:
@@ -51,4 +58,37 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer):
 
         tree['value'] = min_eval
         tree['move'] = best_move
+        memo[(state, maximizingPlayer)] = min_eval, best_move, tree
         return min_eval, best_move, tree
+    
+import time
+
+def main():
+    # Define constants
+    global ROWS, COLS, MAX_DEPTH
+    ROWS, COLS = 6, 7  # Example for a Connect Four board
+    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
+
+    # Example initial state and depth configuration
+    initial_state = 0  # Representing the empty board as an integer
+    maximizing_player = True  # Start with the maximizing player
+
+    # Start the timer
+    start_time = time.time()
+
+    # Test minimax
+    score, best_move, tree_info = alphabeta_minimax(initial_state, 0, -float('inf'), float('inf') , maximizing_player)
+
+    # End the timer
+    end_time = time.time()
+
+    # Calculate elapsed time
+    elapsed_time = end_time - start_time
+
+    print("Best Score:", score)
+    print("Best Move:", best_move)
+    # print("Tree Info:", tree_info)
+    print(f"Execution Time: {elapsed_time:.4f} seconds")
+
+if __name__ == "__main__":
+    main()

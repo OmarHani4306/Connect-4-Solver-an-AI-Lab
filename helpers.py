@@ -277,8 +277,8 @@ def apply_move(state, column, player):
 
 
 #change
-def is_terminal(state, depth, max_depth):
-    return depth >= max_depth or len(valid_moves(state)) == 0 
+def is_terminal(state, depth, MAX_DEPTH):
+    return depth >= MAX_DEPTH or len(valid_moves(state)) == 0 
    
 
 #change

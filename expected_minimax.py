@@ -1,9 +1,14 @@
 from helpers import valid_moves, apply_move, is_terminal, heuristic
 from utils import *
 
+memo = {}
+
 def expectiminimax(state, depth, maximizing_player,node_type):
 
-    if is_terminal(state, depth, max_depth):
+    if (state, node_type) in memo:
+        return memo[(state, node_type)]
+
+    if is_terminal(state, depth, MAX_DEPTH):
         
         value = heuristic(str(state).zfill(42))  
         # if print_tree:
@@ -32,6 +37,7 @@ def expectiminimax(state, depth, maximizing_player,node_type):
 
         tree['value'] = max_eval
         tree['move'] = best_move
+        memo[(state, node_type)] = max_eval, best_move, tree
         return max_eval, best_move, tree
 
     elif node_type == 'min':
@@ -51,6 +57,7 @@ def expectiminimax(state, depth, maximizing_player,node_type):
 
         tree['value'] = min_eval
         tree['move'] = best_move
+        memo[(state, node_type)] = min_eval, best_move, tree
         return min_eval, best_move, tree
 
     elif node_type == 'chance':
@@ -90,4 +97,37 @@ def expectiminimax(state, depth, maximizing_player,node_type):
 
         tree['value'] = expected_value
         tree['children'] = chance_children
+        memo[(state, node_type)] = expected_value, None, tree
         return expected_value, None, tree
+    
+import time
+
+def main():
+    # Define constants
+    global ROWS, COLS, MAX_DEPTH
+    ROWS, COLS = 6, 7  # Example for a Connect Four board
+    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
+
+    # Example initial state and depth configuration
+    initial_state = 0  # Representing the empty board as an integer
+    maximizing_player = True  # Start with the maximizing player
+
+    # Start the timer
+    start_time = time.time()
+
+    # Test minimax
+    score, best_move, tree_info = expectiminimax(initial_state, 0, maximizing_player, 'max')
+
+    # End the timer
+    end_time = time.time()
+
+    # Calculate elapsed time
+    elapsed_time = end_time - start_time
+
+    print("Best Score:", score)
+    print("Best Move:", best_move)
+    # print("Tree Info:", tree_info)
+    print(f"Execution Time: {elapsed_time:.4f} seconds")
+
+if __name__ == "__main__":
+    main()

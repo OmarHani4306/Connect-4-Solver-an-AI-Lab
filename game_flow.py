@@ -76,7 +76,7 @@ def show_tree_gui(tree):
     draw_tree(canvas, tree, x=600, y=50, level_gap=100, node_gap=150)
     # window.mainloop()
 
-def play_game(algorithm, max_depth, columns, rows):
+def play_game(algorithm, MAX_DEPTH, columns, rows):
     #change
     state = 0  
     human_player = 2 
@@ -84,7 +84,7 @@ def play_game(algorithm, max_depth, columns, rows):
     turn_depth = 0  
 
     print("Starting Connect 4! You are Player 2 (Human).")
-    while not is_terminal(state, turn_depth, max_depth, columns, rows):  
+    while not is_terminal(state, turn_depth, MAX_DEPTH, columns, rows):  
         # Human Turn
         valid = valid_moves(state, columns, rows)
         print(f"Valid moves: {valid}")
@@ -101,17 +101,17 @@ def play_game(algorithm, max_depth, columns, rows):
         turn_depth += 1  
 
         # Check if the game ends after Human's turn
-        if is_terminal(state, turn_depth, max_depth, columns, rows):
+        if is_terminal(state, turn_depth, MAX_DEPTH, columns, rows):
             break
 
         # AI Turn
         print("AI is thinking...")
         if algorithm == "minimax":
-            _, best_move, tree = minimax(state, turn_depth, True, max_depth, columns, rows)
+            _, best_move, tree = minimax(state, turn_depth, True, MAX_DEPTH, columns, rows)
         elif algorithm == "alphabeta":
-            _, best_move, tree = alphabeta_minimax(state, turn_depth, -float('inf'), float('inf'), True, max_depth, columns, rows)
+            _, best_move, tree = alphabeta_minimax(state, turn_depth, -float('inf'), float('inf'), True, MAX_DEPTH, columns, rows)
         elif algorithm == "expectiminimax":
-            _, best_move, tree = expectiminimax(state, turn_depth, True,'max', max_depth, columns, rows)
+            _, best_move, tree = expectiminimax(state, turn_depth, True,'max', MAX_DEPTH, columns, rows)
         else:
             raise ValueError("Invalid algorithm. Choose 'minimax', 'alphabeta', or 'expectiminimax'.")
 

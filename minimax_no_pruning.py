@@ -5,10 +5,12 @@ from utils import *
 memo = {}
 
 def minimax(state, depth, maximizingPlayer):
+    global MAX_DEPTH
+    # print(MAX_DEPTH)
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
     
-    if is_terminal(state, depth, max_depth):
+    if is_terminal(state, depth, MAX_DEPTH):
 
         value = heuristic(str(state).zfill(ROWS*COLS))  # change
         return value, None, {'type': 'leaf', 'value': value, 'move': None, 'children': []}
@@ -59,9 +61,9 @@ import time
 
 def main():
     # Define constants
-    global ROWS, COLS, max_depth
+    global ROWS, COLS, MAX_DEPTH
     ROWS, COLS = 6, 7  # Example for a Connect Four board
-    max_depth = 8  # Define how deep the minimax algorithm will explore
+    MAX_DEPTH = 8  # Define how deep the minimax algorithm will explore
 
     # Example initial state and depth configuration
     initial_state = 0  # Representing the empty board as an integer

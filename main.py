@@ -76,7 +76,8 @@ class ConnectFourGUI:
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
-        show_tree_gui(tree)
+        print(24114)
+        # show_tree_gui(tree)
         row = self.top_row[col]
         self.board[row][col] = str(AI)
         self.top_row[col] -= 1
@@ -152,10 +153,11 @@ def start_game(welcome_window, algorithm):
 def show_welcome_window():
     """Displays the welcome window with options to select an AI algorithm and configure settings."""
     def start_game_from_welcome():
-        global max_depth
         """Starts the game with the selected settings."""
         algorithm = algorithm_var.get()
-        max_depth = k_entry.get() if k_entry.get().isdigit() else None
+        MAX_DEPTH = k_entry.get() if k_entry.get().isdigit() else None
+        if MAX_DEPTH == None:
+            MAX_DEPTH = 3
         start_game(welcome_window, algorithm)
 
     # Create the welcome window
