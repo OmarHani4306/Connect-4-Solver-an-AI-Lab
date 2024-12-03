@@ -2,10 +2,12 @@ from helpers import valid_moves, apply_move, is_terminal, heuristic
 from utils import ROWS, COLS, MAX_DEPTH
 
 memo = {}
+no_of_nodes = 0
 
 def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth):
     # print(state)
     # print(max_depth)
+    global no_of_nodes
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
 
@@ -32,7 +34,7 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth):
                 break
 
             tree['children'].append({'type': 'min', 'value': eval, 'move': column, 'children': child_tree['children']})
-
+        no_of_nodes += 1
         tree['value'] = max_eval
         tree['move'] = best_move
         memo[(state, maximizingPlayer)] = max_eval, best_move, tree
@@ -55,7 +57,7 @@ def alphabeta_minimax(state, depth, alpha, beta, maximizingPlayer, max_depth):
                 break
 
             tree['children'].append({'type': 'max', 'value': eval, 'move': column, 'children': child_tree['children']})
-
+        no_of_nodes += 1
         tree['value'] = min_eval
         tree['move'] = best_move
         memo[(state, maximizingPlayer)] = min_eval, best_move, tree

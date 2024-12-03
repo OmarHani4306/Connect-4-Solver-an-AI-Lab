@@ -2,9 +2,10 @@ from helpers import valid_moves, apply_move, is_terminal, heuristic
 from utils import *
 
 memo = {}
-
+no_of_nodes = 0
 def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
     # print(max_depth)
+    global no_of_nodes
     if (state, node_type) in memo:
         return memo[(state, node_type)]
 
@@ -22,7 +23,7 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
         max_eval = -float('inf')
         best_move = None
         # print(print_board(string_to_board(state, rows, columns)))
-
+        no_of_nodes += 1
         for column in valid_moves(state): 
             # Simulate AI move
             new_state = apply_move(state, column, 1)
@@ -43,7 +44,7 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
     elif node_type == 'min':
         min_eval = float('inf')
         best_move = None
-
+        no_of_nodes += 1
         for column in valid_moves(state):  
             # Simulate Human move
             new_state = apply_move(state, column, 2)
@@ -63,7 +64,7 @@ def expectiminimax(state, depth, maximizing_player,node_type, max_depth):
     elif node_type == 'chance':
         expected_value = 0
         chance_children = []
-
+        no_of_nodes += 1
         valid_moves_columns = valid_moves(state)
 
         for column in valid_moves_columns:  # Simulate dropping into current, left, and right columns

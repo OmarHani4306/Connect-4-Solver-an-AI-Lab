@@ -3,9 +3,10 @@ from helpers import valid_moves, apply_move, is_terminal, heuristic
 from utils import *
 
 memo = {}
-
+no_of_nodes = 0
 def minimax(state, depth, maximizingPlayer, max_depth):
     # print(max_depth)
+    global no_of_nodes
     if (state, maximizingPlayer) in memo:
         return memo[(state, maximizingPlayer)]
     
@@ -20,6 +21,7 @@ def minimax(state, depth, maximizingPlayer, max_depth):
         max_eval = -float('inf')
         best_move = None
 
+        no_of_nodes += 1
         for column in valid_moves(state):  # Pass rows and columns
             new_state = apply_move(state, column, 1)  # Pass rows and columns
             eval, _, child_tree = minimax(new_state, depth + 1, False, max_depth)
@@ -29,7 +31,6 @@ def minimax(state, depth, maximizingPlayer, max_depth):
                 best_move = column
 
             tree['children'].append({'type': 'min', 'value': eval, 'move': column, 'children': child_tree['children']})
-
         tree['value'] = max_eval
         tree['move'] = best_move
         memo[(state, maximizingPlayer)] = max_eval, best_move, tree
@@ -39,7 +40,7 @@ def minimax(state, depth, maximizingPlayer, max_depth):
     else:
         min_eval = float('inf')
         best_move = None
-
+        no_of_nodes += 1
         for column in valid_moves(state):  # Pass rows and columns
             new_state = apply_move(state, column, 2)  # Pass rows and columns
             eval, _, child_tree = minimax(new_state, depth + 1, True, max_depth)

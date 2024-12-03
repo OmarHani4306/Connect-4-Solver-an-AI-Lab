@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import numpy as np
-import math, random
+import math, random, time
 import minimax_with_pruning, minimax_no_pruning, expected_minimax
 import sympy as sp
 from helpers import *
@@ -65,21 +65,60 @@ class ConnectFourGUI:
         self.root.after(500, self.ai_move)
 
 
+    def show_status_gui(self, status_message):
+        """Displays a simple status GUI."""
+        status_window = tk.Toplevel()
+        status_window.title("AI Status")
+        status_window.geometry("640x200")
+        label = tk.Label(status_window, text=status_message, font=("Arial", 12))
+        label.pack(pady=20)
+        
+        # Prevent interaction with the main window while this window is open
+        status_window.grab_set()
+        status_window.update_idletasks()
+        return status_window
+
     def ai_move(self):
-        # print(k)
-        # Dynamically import and run the selected algorithm
+        """Handles the AI's move."""
+        # Show initial status GUI
+        status_window = self.show_status_gui("AI is thinking...")
+
+        # Track time for algorithm execution
+        start_time = time.time()
+        nodes_processed = 0
+        # Perform AI computation
         col = np.random.choice(COLS)
         if self.algorithm == "minimax_with_pruning":
-            _, col, tree = minimax_with_pruning.alphabeta_minimax(int(board_to_string(self.board)), 0, -float('inf'), float('inf'), True, self.k)
+            minimax_with_pruning.no_of_nodes = 0
+            _, col, tree = minimax_with_pruning.alphabeta_minimax(
+                int(board_to_string(self.board)), 0, -float('inf'), float('inf'), True, self.k
+            )
+            nodes_processed = minimax_with_pruning.no_of_nodes
         elif self.algorithm == "minimax_no_pruning":
-            _, col, tree = minimax_no_pruning.minimax(int(board_to_string(self.board)), 0, True, self.k)
+            minimax_no_pruning.no_of_nodes = 0
+            _, col, tree = minimax_no_pruning.minimax(
+                int(board_to_string(self.board)), 0, True, self.k
+            )
+            nodes_processed = minimax_no_pruning.no_of_nodes
         elif self.algorithm == "expected_minimax":
-            _, col, tree = expected_minimax.expectiminimax(int(board_to_string(self.board)), 0, True, 'max', self.k)
+            expected_minimax.no_of_nodes = 0
+            _, col, tree = expected_minimax.expectiminimax(
+                int(board_to_string(self.board)), 0, True, 'max', self.k
+            )
+            nodes_processed = expected_minimax.no_of_nodes
         elif self.algorithm == "random_algorithm":
             while not self.is_valid_location(col):
                 col = np.random.choice(COLS)
-        # print(24114)
-        # show_tree_gui(tree)
+
+        end_time = time.time()  # End time for computation
+
+        # Update status GUI
+        elapsed_time = end_time - start_time
+        status_window.destroy()
+        self.show_status_gui(f"AI move completed in {elapsed_time:.5f} seconds.\nNodes processed: {nodes_processed}")
+
+        # Proceed with the move
+        show_tree_gui(tree)
         row = self.top_row[col]
         self.board[row][col] = str(AI)
         self.top_row[col] -= 1
